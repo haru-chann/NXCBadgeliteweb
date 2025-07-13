@@ -1,0 +1,27 @@
+{
+  "name": "NXC Badge Lite",
+  "short_name": "NXC Badge",
+  "description": "Digital Business Card Networking App",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#FFD700",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "networking", "productivity"],
+  "lang": "en",
+  "dir": "ltr"
+}
