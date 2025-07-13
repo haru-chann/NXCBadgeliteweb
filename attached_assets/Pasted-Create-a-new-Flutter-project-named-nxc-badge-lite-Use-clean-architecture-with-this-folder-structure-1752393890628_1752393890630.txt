@@ -1,0 +1,191 @@
+Create a new Flutter project named nxc_badge_lite.
+Use clean architecture with this folder structure:
+
+bash
+Copy
+Edit
+lib/
+├── main.dart
+├── theme/
+│   ├── colors.dart
+│   ├── typography.dart
+│   └── app_theme.dart
+├── screens/
+│   ├── login_screen.dart
+│   ├── dashboard_screen.dart
+│   ├── profile_editor.dart
+│   ├── scan_nfc_screen.dart
+│   ├── connections_screen.dart
+│   ├── who_viewed_me_screen.dart
+│   ├── analytics_screen.dart
+│   └── profile_view_screen.dart
+├── widgets/
+│   ├── nfc_card.dart
+│   ├── social_icon_row.dart
+│   ├── glowing_button.dart
+│   └── glowing_profile_avatar.dart
+├── services/
+│   ├── nfc_service.dart
+│   ├── auth_service.dart
+│   ├── profile_service.dart
+│   ├── analytics_service.dart
+│   └── view_log_service.dart
+├── models/
+│   ├── user_profile.dart
+│   └── connection.dart
+└── utils/
+    ├── constants.dart
+    └── helpers.dart
+🎨 App Theme Prompt
+Create a theme in app_theme.dart with the following design requirements:
+
+Background: Pitch Black
+
+Primary Accent: Radiant Gold (#FFD700)
+
+Secondary Accent: Electric Blue (#1E90FF)
+
+Text: Soft Extra White (#F5F5F5)
+
+Font: Sleek, rounded fonts (e.g., Poppins, fallback sans-serif)
+
+Use PageTransitionsTheme for smooth slide animations between screens.
+
+Add hover/press animation to buttons
+
+Add glow or neon-like shadows to buttons/icons
+
+Keep everything minimal, lots of padding, clean cards, thin dividers
+
+📲 Login & Signup Screen
+Create login_screen.dart:
+
+Black background, glowing logo at top center
+
+Google Sign-In and Email/Password
+
+Animate the login card into view
+
+On login, navigate to dashboard_screen.dart
+
+🏠 Dashboard Screen
+Create dashboard_screen.dart:
+
+AppBar with greeting (e.g., “Hey Ritu 👋”)
+
+Grid/List of features:
+
+“My Profile”
+
+“Scan NFC”
+
+“Connections”
+
+“Who Viewed Me”
+
+“Analytics”
+
+Use neon-glowing icons and animated hover effect on buttons
+
+👤 Profile Editor
+Create profile_editor.dart:
+
+TextFields for: Name, Bio, Profession, Email
+
+Social icons: WhatsApp, GitHub, LinkedIn, Instagram
+
+Upload Profile Image
+
+Drag & drop social icons to reorder
+
+“Save Profile” → stub function: updateUserProfile()
+
+📡 NFC Scan Screen
+Create scan_nfc_screen.dart:
+
+Use flutter_nfc_kit to scan cards
+
+Button: “Tap Your NXC Card”
+
+On card read: extract ID → call fetchProfileByNFC(tagId)
+
+Show preview of received profile + Save to Connections
+
+🔗 Connections Screen
+Create connections_screen.dart:
+
+List of all saved profiles
+
+Card with user avatar, name, profession
+
+OnTap: Open full profile in profile_view_screen.dart
+
+👀 Who Viewed Me Screen
+Create who_viewed_me_screen.dart:
+
+List of people who viewed your profile
+
+Show date, device type, location (if available)
+
+Graph summary using fl_chart
+
+📊 Analytics Screen
+Create analytics_screen.dart:
+
+Profession-wise analytics of who viewed you, who you met
+
+Download CSV button (downloadAnalytics())
+
+Use bar charts, pie charts with gold/blue neon accents
+
+🌐 Public Profile Web Viewer (optional)
+Design a responsive profile_view_screen.dart:
+
+Show partial user data
+
+CTA: “Download App to View Full Profile”
+
+If app is installed, open internal full profile view
+
+🔄 Navigation
+Use Navigator with named routes in main.dart
+Add route transitions using PageRouteBuilder with fade + slide
+Example:
+
+dart
+Copy
+Edit
+Navigator.pushNamed(context, '/connections');
+🔌 Service Layer (Stubbed)
+In services/, create stub functions like:
+
+dart
+Copy
+Edit
+Future<void> fetchUserProfile();
+Future<void> updateUserProfile();
+Future<void> fetchProfileByNFC(String tagId);
+Future<void> getViewLogs();
+Future<void> downloadAnalytics();
+✨ Bonus Features (Optional)
+QR Code generation using qr_flutter for profile sharing
+
+Option to favorite or tag a connection
+
+Smart search inside connections
+
+Add a glowing floating action button to share profile from anywhere
+
+✅ After Prompting
+Once Cursor AI generates this:
+
+You can test layouts using the preview panel
+
+If something breaks, prompt:
+
+“Fix this error and make layout responsive.”
+
+Want more animations? Prompt:
+
+“Add fade-in + glowing border animation to buttons.”
+
