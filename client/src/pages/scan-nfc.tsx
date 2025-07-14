@@ -80,25 +80,52 @@ export default function ScanNFC() {
 
     setIsScanning(true);
     try {
-      const tagId = await startNFCScan();
+      const scannedData = await startNFCScan();
       
-      // Fetch profile by NFC tag ID
-      const response = await fetch(`/api/profile/nfc/${tagId}`);
-      if (!response.ok) {
-        throw new Error("Profile not found");
-      }
-      
-      const profile = await response.json();
-      
-      // Save connection
-      createConnectionMutation.mutate({
-        toUserId: profile.userId,
-        toProfileId: profile.id,
-        scanMethod: "nfc",
-      });
+      // Check if it's a URL (new format) or tag ID (legacy format)
+      if (scannedData.startsWith('http')) {
+        // Extract profile ID from URL
+        const profileId = extractProfileIdFromUrl(scannedData);
+        if (profileId) {
+          // Fetch profile by ID
+          const response = await fetch(`/api/profile/${profileId}`);
+          if (!response.ok) {
+            throw new Error("Profile not found");
+          }
+          
+          const profile = await response.json();
+          
+          // Save connection
+          createConnectionMutation.mutate({
+            toUserId: profile.userId,
+            toProfileId: profile.id,
+            scanMethod: "nfc",
+          });
 
-      // Navigate to profile view
-      setLocation(`/profile/${profile.id}`);
+          // Navigate to profile view
+          setLocation(`/profile/${profile.id}`);
+        } else {
+          throw new Error("Invalid profile URL");
+        }
+      } else {
+        // Legacy format - NFC tag ID
+        const response = await fetch(`/api/profile/nfc/${scannedData}`);
+        if (!response.ok) {
+          throw new Error("Profile not found");
+        }
+        
+        const profile = await response.json();
+        
+        // Save connection
+        createConnectionMutation.mutate({
+          toUserId: profile.userId,
+          toProfileId: profile.id,
+          scanMethod: "nfc",
+        });
+
+        // Navigate to profile view
+        setLocation(`/profile/${profile.id}`);
+      }
       
     } catch (error) {
       toast({
@@ -116,11 +143,26 @@ export default function ScanNFC() {
     try {
       const qrData = await startQRScan();
       
-      // Parse QR code data (should contain profile URL or ID)
-      const profileId = extractProfileIdFromQR(qrData);
+      // Parse QR code data (should contain profile URL)
+      const profileId = extractProfileIdFromUrl(qrData);
       if (!profileId) {
         throw new Error("Invalid QR code");
       }
+
+      // Fetch profile by ID
+      const response = await fetch(`/api/profile/${profileId}`);
+      if (!response.ok) {
+        throw new Error("Profile not found");
+      }
+      
+      const profile = await response.json();
+      
+      // Save connection
+      createConnectionMutation.mutate({
+        toUserId: profile.userId,
+        toProfileId: profile.id,
+        scanMethod: "qr",
+      });
 
       // Navigate to profile view
       setLocation(`/profile/${profileId}`);
@@ -136,10 +178,9 @@ export default function ScanNFC() {
     }
   };
 
-  const extractProfileIdFromQR = (qrData: string): string | null => {
-    // Extract profile ID from QR data
-    // Could be a URL like "https://app.com/profile/123" or just "123"
-    const match = qrData.match(/profile\/(\d+)/) || qrData.match(/^(\d+)$/);
+  const extractProfileIdFromUrl = (url: string): string | null => {
+    // Extract profile ID from URL like "https://app.com/profile/123" or just "123"
+    const match = url.match(/profile\/(\d+)/) || url.match(/^(\d+)$/);
     return match ? match[1] : null;
   };
 

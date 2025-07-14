@@ -79,23 +79,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Profile not found" });
       }
       
-      // Record view if not the owner
+      res.json(profile);
+    } catch (error) {
+      console.error("Error fetching profile:", error);
+      res.status(500).json({ message: "Failed to fetch profile" });
+    }
+  });
+
+  app.post('/api/profile/:id/view', async (req, res) => {
+    try {
+      const profileId = parseInt(req.params.id);
+      const { viewerLocation, viewDuration } = req.body;
       const userAgent = req.get('User-Agent') || '';
       const ipAddress = req.ip;
       
       await storage.recordProfileView({
         profileId,
-        viewerLocation: null,
+        viewerLocation,
         viewerDevice: userAgent,
-        viewDuration: null,
+        viewDuration,
         ipAddress,
         userAgent,
       });
       
-      res.json(profile);
+      res.json({ success: true });
     } catch (error) {
-      console.error("Error fetching profile:", error);
-      res.status(500).json({ message: "Failed to fetch profile" });
+      console.error("Error recording profile view:", error);
+      res.status(500).json({ message: "Failed to record profile view" });
     }
   });
 

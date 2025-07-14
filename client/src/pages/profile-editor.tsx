@@ -16,7 +16,9 @@ import { apiRequest } from "@/lib/queryClient";
 import GlowingButton from "@/components/glowing-button";
 import ProfileAvatar from "@/components/profile-avatar";
 import SocialLinksEditor from "@/components/social-links-editor";
-import { ArrowLeft, Camera, Save } from "lucide-react";
+import { ArrowLeft, Camera, Save, Wifi, QrCode, Download, Copy } from "lucide-react";
+import { generateQRCode, generateProfileUrl } from "@/lib/qr";
+import { writeNFCTag, isNFCSupported } from "@/lib/nfc";
 
 const profileSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -42,6 +44,9 @@ export default function ProfileEditor() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [profileImage, setProfileImage] = useState<string>("");
+  const [nfcSupported, setNFCSupported] = useState(false);
+  const [profileUrl, setProfileUrl] = useState<string>("");
+  const [qrCodeUrl, setQRCodeUrl] = useState<string>("");
 
   const { data: profile, isLoading: profileLoading } = useQuery({
     queryKey: ["/api/profile"],
@@ -66,6 +71,10 @@ export default function ProfileEditor() {
       },
     },
   });
+
+  useEffect(() => {
+    setNFCSupported(isNFCSupported());
+  }, []);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -99,6 +108,13 @@ export default function ProfileEditor() {
         },
       });
       setProfileImage(user?.profileImageUrl || "");
+      
+      // Generate profile URL and QR code
+      if (profile.id) {
+        const url = generateProfileUrl(profile.id);
+        setProfileUrl(url);
+        setQRCodeUrl(generateQRCode(url));
+      }
     } else if (user) {
       form.reset({
         name: `${user.firstName || ""} ${user.lastName || ""}`.trim(),
@@ -161,6 +177,54 @@ export default function ProfileEditor() {
       title: "Image Upload",
       description: "Image upload functionality would be implemented here",
     });
+  };
+
+  const handleWriteNFC = async () => {
+    if (!profileUrl) {
+      toast({
+        title: "No Profile URL",
+        description: "Please save your profile first to generate NFC tag",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      await writeNFCTag(profileUrl);
+      toast({
+        title: "NFC Tag Written",
+        description: "Your NFC tag has been successfully programmed",
+      });
+    } catch (error) {
+      toast({
+        title: "NFC Write Failed",
+        description: error instanceof Error ? error.message : "Failed to write NFC tag",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleCopyUrl = () => {
+    if (profileUrl) {
+      navigator.clipboard.writeText(profileUrl);
+      toast({
+        title: "URL Copied",
+        description: "Profile URL copied to clipboard",
+      });
+    }
+  };
+
+  const handleDownloadQR = () => {
+    if (qrCodeUrl) {
+      const link = document.createElement('a');
+      link.href = qrCodeUrl;
+      link.download = 'nxc-badge-qr.png';
+      link.click();
+      toast({
+        title: "QR Code Downloaded",
+        description: "QR code image saved to downloads",
+      });
+    }
   };
 
   if (isLoading || profileLoading) {
@@ -291,6 +355,80 @@ export default function ProfileEditor() {
             />
           </CardContent>
         </Card>
+
+        {/* NFC and QR Code Sharing */}
+        {profile && profileUrl && (
+          <Card className="bg-card border-border">
+            <CardContent className="pt-6">
+              <h3 className="text-lg font-semibold mb-4">Share Your Profile</h3>
+              <div className="grid md:grid-cols-2 gap-6">
+                
+                {/* NFC Section */}
+                <div className="space-y-4">
+                  <h4 className="font-medium flex items-center gap-2">
+                    <Wifi className="w-5 h-5 text-primary" />
+                    NFC Tag
+                  </h4>
+                  <p className="text-sm text-muted-foreground">
+                    Write your profile URL to an NFC tag for easy sharing
+                  </p>
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleWriteNFC}
+                      disabled={!nfcSupported}
+                      className="flex-1"
+                    >
+                      <Wifi className="w-4 h-4 mr-2" />
+                      {nfcSupported ? "Write NFC Tag" : "NFC Not Supported"}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleCopyUrl}
+                      size="sm"
+                    >
+                      <Copy className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  <div className="text-xs text-muted-foreground bg-muted p-2 rounded">
+                    URL: {profileUrl}
+                  </div>
+                </div>
+
+                {/* QR Code Section */}
+                <div className="space-y-4">
+                  <h4 className="font-medium flex items-center gap-2">
+                    <QrCode className="w-5 h-5 text-primary" />
+                    QR Code
+                  </h4>
+                  <p className="text-sm text-muted-foreground">
+                    Share your profile with a QR code
+                  </p>
+                  {qrCodeUrl && (
+                    <div className="flex flex-col items-center gap-3">
+                      <img 
+                        src={qrCodeUrl} 
+                        alt="Profile QR Code" 
+                        className="w-32 h-32 border border-border rounded-lg"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleDownloadQR}
+                        size="sm"
+                      >
+                        <Download className="w-4 h-4 mr-2" />
+                        Download QR
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Save Button */}
         <GlowingButton

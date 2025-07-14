@@ -85,15 +85,13 @@ export const startQRScan = (): Promise<string> => {
   });
 };
 
-export const generateQRCode = (data: string): string => {
-  // In a real app, you'd use a QR code generation library
-  // For now, return a placeholder SVG
-  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(`
-    <svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
-      <rect width="200" height="200" fill="white"/>
-      <rect x="20" y="20" width="160" height="160" fill="black"/>
-      <rect x="40" y="40" width="120" height="120" fill="white"/>
-      <text x="100" y="105" text-anchor="middle" font-family="Arial" font-size="12" fill="black">QR Code</text>
-    </svg>
-  `)}`;
+export const generateQRCode = (profileUrl: string): string => {
+  // Generate QR code for the profile URL using a free QR API
+  return `https://api.qrserver.com/v1/create-qr-code/?size=400x400&format=png&data=${encodeURIComponent(profileUrl)}`;
+};
+
+export const generateProfileUrl = (profileId: number): string => {
+  // Generate public profile URL that works for everyone
+  const baseUrl = window.location.origin;
+  return `${baseUrl}/profile/${profileId}`;
 };

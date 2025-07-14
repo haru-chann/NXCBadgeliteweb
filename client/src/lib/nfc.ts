@@ -16,7 +16,12 @@ export const startNFCScan = (): Promise<string> => {
         ndef.addEventListener("reading", (event: any) => {
           const decoder = new TextDecoder();
           for (const record of event.message.records) {
-            if (record.recordType === "text") {
+            if (record.recordType === "url") {
+              const profileUrl = decoder.decode(record.data);
+              resolve(profileUrl);
+              return;
+            } else if (record.recordType === "text") {
+              // Fallback for legacy text records
               const tagId = decoder.decode(record.data);
               resolve(tagId);
               return;
@@ -33,7 +38,7 @@ export const startNFCScan = (): Promise<string> => {
   });
 };
 
-export const writeNFCTag = (tagId: string): Promise<void> => {
+export const writeNFCTag = (profileUrl: string): Promise<void> => {
   return new Promise((resolve, reject) => {
     if (!isNFCSupported()) {
       reject(new Error("NFC is not supported on this device"));
@@ -44,7 +49,7 @@ export const writeNFCTag = (tagId: string): Promise<void> => {
       const ndef = new (window as any).NDEFReader();
       
       ndef.write({
-        records: [{ recordType: "text", data: tagId }]
+        records: [{ recordType: "url", data: profileUrl }]
       }).then(() => {
         resolve();
       }).catch((error: any) => {

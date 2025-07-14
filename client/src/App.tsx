@@ -12,6 +12,7 @@ import Connections from "@/pages/connections";
 import ProfileViews from "@/pages/profile-views";
 import Analytics from "@/pages/analytics";
 import ProfileView from "@/pages/profile-view";
+import PublicProfile from "@/pages/public-profile";
 import BottomNavigation from "@/components/bottom-navigation";
 import NotFound from "@/pages/not-found";
 
@@ -21,6 +22,10 @@ function Router() {
   return (
     <div className="min-h-screen bg-black text-soft-white">
       <Switch>
+        {/* Public profile route - works for everyone */}
+        <Route path="/profile/:id" component={PublicProfile} />
+        
+        {/* Other routes based on authentication */}
         {isLoading || !isAuthenticated ? (
           <Route path="/" component={Landing} />
         ) : (
@@ -31,7 +36,6 @@ function Router() {
             <Route path="/connections" component={Connections} />
             <Route path="/views" component={ProfileViews} />
             <Route path="/analytics" component={Analytics} />
-            <Route path="/profile/:id" component={ProfileView} />
           </>
         )}
         <Route component={NotFound} />
