@@ -1,0 +1,92 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isPublicProfile() {
+      return resource.data.isPublic == true;
+    }
+    
+    // Users collection - users can only access their own data
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+    
+    // Profiles collection
+    match /profiles/{profileId} {
+      // Anyone can read public profiles, only owner can read private profiles
+      allow read: if isPublicProfile() || 
+                     (isAuthenticated() && request.auth.uid == resource.data.userId);
+      
+      // Only owner can create/update their profile
+      allow create, update: if isAuthenticated() && 
+                               request.auth.uid == resource.data.userId;
+      
+      // Only owner can delete their profile
+      allow delete: if isAuthenticated() && 
+                       request.auth.uid == resource.data.userId;
+    }
+    
+    // Connections collection
+    match /connections/{connectionId} {
+      // Users can read connections where they are either the sender or receiver
+      allow read: if isAuthenticated() && 
+                     (request.auth.uid == resource.data.fromUserId ||
+                      request.auth.uid == resource.data.toUserId);
+      
+      // Users can create connections where they are the sender
+      allow create: if isAuthenticated() && 
+                       request.auth.uid == resource.data.fromUserId;
+      
+      // Users can update/delete connections where they are the sender
+      allow update, delete: if isAuthenticated() && 
+                               request.auth.uid == resource.data.fromUserId;
+    }
+    
+    // Profile views collection
+    match /profileViews/{viewId} {
+      // Anyone can create a profile view (for analytics)
+      allow create: if true;
+      
+      // Only authenticated users can read views
+      allow read: if isAuthenticated();
+      
+      // Profile owners can read all views of their profiles
+      allow read: if isAuthenticated() && 
+                     exists(/databases/$(database)/documents/profiles/$(resource.data.profileId)) &&
+                     get(/databases/$(database)/documents/profiles/$(resource.data.profileId)).data.userId == request.auth.uid;
+    }
+    
+    // Analytics collection
+    match /analytics/{userId} {
+      // Only the user can read/write their own analytics
+      allow read, write: if isOwner(userId);
+    }
+    
+    // FCM tokens subcollection under users
+    match /users/{userId}/fcmTokens/{tokenId} {
+      allow read, write: if isOwner(userId);
+    }
+    
+    // Notifications collection
+    match /notifications/{notificationId} {
+      // Users can read their own notifications
+      allow read: if isAuthenticated() && 
+                     request.auth.uid == resource.data.userId;
+      
+      // System can create notifications (via Cloud Functions)
+      allow create: if true;
+      
+      // Users can update their own notifications (mark as read, etc.)
+      allow update: if isAuthenticated() && 
+                       request.auth.uid == resource.data.userId;
+    }
+  }
+}

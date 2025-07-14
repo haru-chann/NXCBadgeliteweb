@@ -84,7 +84,10 @@ export class DatabaseStorage implements IStorage {
   async createProfile(profile: InsertProfile): Promise<Profile> {
     const [newProfile] = await db
       .insert(profiles)
-      .values(profile)
+      .values({
+        ...profile,
+        socialLinks: profile.socialLinks || null,
+      })
       .returning();
     return newProfile;
   }
@@ -92,7 +95,11 @@ export class DatabaseStorage implements IStorage {
   async updateProfile(userId: string, profileData: Partial<InsertProfile>): Promise<Profile> {
     const [profile] = await db
       .update(profiles)
-      .set({ ...profileData, updatedAt: new Date() })
+      .set({ 
+        ...profileData, 
+        socialLinks: profileData.socialLinks || null,
+        updatedAt: new Date() 
+      })
       .where(eq(profiles.userId, userId))
       .returning();
     return profile;
@@ -118,7 +125,10 @@ export class DatabaseStorage implements IStorage {
   async createConnection(connection: InsertConnection): Promise<Connection> {
     const [newConnection] = await db
       .insert(connections)
-      .values(connection)
+      .values({
+        ...connection,
+        scanMethod: connection.scanMethod as "nfc" | "qr" | "link",
+      })
       .returning();
     return newConnection;
   }

@@ -21,15 +21,20 @@ Preferred communication style: Simple, everyday language.
 ### Backend Architecture
 - **Runtime**: Node.js with Express.js
 - **Language**: TypeScript with ES modules
-- **API Pattern**: RESTful API design
-- **Database ORM**: Drizzle ORM for type-safe database operations
-- **Authentication**: Replit Auth with OpenID Connect (OIDC)
-- **Session Management**: PostgreSQL-backed sessions with connect-pg-simple
+- **API Pattern**: RESTful API design with Firebase integration
+- **Database ORM**: Drizzle ORM for PostgreSQL + Firebase Firestore
+- **Authentication**: Dual support - Replit Auth (OIDC) and Firebase Auth (Google)
+- **Session Management**: PostgreSQL-backed sessions + Firebase Auth tokens
+- **Real-time**: Firebase Firestore real-time subscriptions
+- **Push Notifications**: Firebase Cloud Messaging (FCM)
+- **Cloud Functions**: Firebase Functions for serverless operations
 
 ### Database Architecture
-- **Database**: PostgreSQL (configured for Neon serverless)
-- **Schema Management**: Drizzle migrations
-- **Connection**: Neon serverless with WebSocket support
+- **Primary Database**: PostgreSQL (Neon serverless) for core operations
+- **Real-time Database**: Firebase Firestore for live features
+- **Schema Management**: Drizzle migrations for PostgreSQL
+- **Connection**: Neon serverless with WebSocket support + Firebase SDK
+- **Offline Support**: Firestore offline persistence for mobile users
 
 ## Key Components
 
@@ -93,6 +98,13 @@ Preferred communication style: Simple, everyday language.
 - **@radix-ui/**: Accessible UI primitives
 - **wouter**: Lightweight React router
 
+### Firebase Dependencies
+- **firebase**: Client-side Firebase SDK for web
+- **firebase-admin**: Server-side Firebase Admin SDK
+- **@firebase/messaging**: Push notifications client
+- **@firebase/firestore**: Real-time database client
+- **@firebase/auth**: Authentication client
+
 ### Development Dependencies
 - **Vite**: Build tool and dev server
 - **TypeScript**: Type safety and development experience
@@ -100,10 +112,11 @@ Preferred communication style: Simple, everyday language.
 - **ESBuild**: Fast bundling for production
 
 ### Authentication Dependencies
-- **openid-client**: OIDC authentication
+- **openid-client**: OIDC authentication (Replit)
 - **passport**: Authentication middleware
 - **express-session**: Session management
 - **connect-pg-simple**: PostgreSQL session store
+- **firebase/auth**: Google authentication via Firebase
 
 ## Deployment Strategy
 
