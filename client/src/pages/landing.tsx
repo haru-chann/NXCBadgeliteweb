@@ -59,7 +59,7 @@ export default function Landing() {
         await createUserWithEmailAndPassword(auth, email, password);
       });
       toast({ title: "Sign Up Successful", description: "Account created!", variant: "default" });
-      setLocation("/profile/edit");
+      setLocation("/profile/create");
     } catch (error: any) {
       toast({
         title: "Sign Up Failed",
