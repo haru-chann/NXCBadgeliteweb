@@ -36,11 +36,11 @@ export default function Home() {
     if (!isLoading && !isAuthenticated) {
       toast({
         title: "Unauthorized",
-        description: "You are logged out. Logging in again...",
+        description: "You are logged out. Please log in.",
         variant: "destructive",
       });
       setTimeout(() => {
-        window.location.href = "/api/login";
+        window.location.href = "/"; // Redirect to landing/login page
       }, 500);
       return;
     }

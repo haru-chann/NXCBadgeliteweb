@@ -89,7 +89,11 @@ export default function PublicProfile() {
       recordProfileView(profileData.id);
       
     } catch (error) {
-      console.error("Error fetching profile:", error);
+      toast({
+  title: "Profile Fetch Error",
+  description: error?.message || "Error fetching profile.",
+  variant: "destructive",
+});
       toast({
         title: "Profile Not Found",
         description: "This profile doesn't exist or is private",
@@ -115,14 +119,18 @@ export default function PublicProfile() {
       });
     } catch (error) {
       // Silently fail - analytics are not critical
-      console.log("Could not record profile view:", error);
+      toast({
+  title: "Profile View Error",
+  description: error?.message || "Could not record profile view.",
+  variant: "destructive",
+});
     }
   };
 
   const handleConnect = async () => {
     if (!isAuthenticated) {
       // Redirect to login
-      window.location.href = "/api/login";
+      window.location.href = "/";
       return;
     }
 

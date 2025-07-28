@@ -27,7 +27,7 @@ if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
   try {
     messaging = getMessaging(app);
   } catch (error) {
-    console.log('Firebase messaging not supported:', error);
+    // console.log('Firebase messaging not supported:', error);
   }
 }
 

@@ -8,7 +8,7 @@ export async function requestNotificationPermission(): Promise<string | null> {
   try {
     // Check if messaging is available
     if (!messaging) {
-      console.log('Firebase messaging not supported');
+      // console.log('Firebase messaging not supported');
       return null;
     }
 
@@ -16,21 +16,25 @@ export async function requestNotificationPermission(): Promise<string | null> {
     const permission = await Notification.requestPermission();
     
     if (permission === 'granted') {
-      console.log('Notification permission granted');
+      // console.log('Notification permission granted');
       
       // Get FCM token
       const token = await getToken(messaging, {
         vapidKey: VAPID_KEY
       });
       
-      console.log('FCM Token:', token);
+      // console.log('FCM Token:', token);
       return token;
     } else {
-      console.log('Notification permission denied');
+      // console.log('Notification permission denied');
       return null;
     }
   } catch (error) {
-    console.error('Error getting notification permission:', error);
+    toast({
+  title: "Notification Permission Error",
+  description: error?.message || "Error getting notification permission.",
+  variant: "destructive",
+});
     return null;
   }
 }
@@ -39,7 +43,7 @@ export function setupMessageListener() {
   if (!messaging) return;
 
   onMessage(messaging, (payload) => {
-    console.log('Message received in foreground:', payload);
+    // console.log('Message received in foreground:', payload);
     
     // Handle foreground messages
     if (payload.notification) {
@@ -69,8 +73,12 @@ export async function saveTokenToDatabase(userId: string, token: string) {
       throw new Error('Failed to save FCM token');
     }
     
-    console.log('FCM token saved successfully');
+    // console.log('FCM token saved successfully');
   } catch (error) {
-    console.error('Error saving FCM token:', error);
+    toast({
+  title: "FCM Token Save Error",
+  description: error?.message || "Error saving FCM token.",
+  variant: "destructive",
+});
   }
 }

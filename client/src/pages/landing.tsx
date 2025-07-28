@@ -20,7 +20,11 @@ export default function Landing() {
       });
       window.location.href = "/";
     } catch (error: any) {
-      alert(error.message || "Failed to sign in");
+      toast({
+  title: "Login Failed",
+  description: error.message || "Failed to sign in",
+  variant: "destructive",
+});
     }
   };
 
@@ -32,7 +36,11 @@ export default function Landing() {
       });
       window.location.href = "/";
     } catch (error: any) {
-      alert(error.message || "Google sign-in failed");
+      toast({
+  title: "Google Login Failed",
+  description: error.message || "Google sign-in failed",
+  variant: "destructive",
+});
     }
   };
 
@@ -45,7 +53,11 @@ export default function Landing() {
       });
       window.location.href = "/";
     } catch (error: any) {
-      alert(error.message || "Sign up failed");
+      toast({
+  title: "Sign Up Failed",
+  description: error.message || "Sign up failed",
+  variant: "destructive",
+});
     }
   };
 
@@ -120,12 +132,39 @@ export default function Landing() {
             </GlowingButton>
           </form>
 
-          <p className="text-center text-muted-foreground text-sm mt-6">
-            Don't have an account?{" "}
-            <a href="/api/login" className="text-primary hover:underline">
-              Sign up
-            </a>
-          </p>
+          <form onSubmit={handleSignUp} className="space-y-4 mt-6">
+  <div className="space-y-2">
+    <Label htmlFor="signup-email">Email address</Label>
+    <Input
+      id="signup-email"
+      type="email"
+      placeholder="Enter your email"
+      value={email}
+      onChange={(e) => setEmail(e.target.value)}
+      className="bg-background border-border focus:border-primary focus:ring-primary"
+      required
+    />
+  </div>
+  <div className="space-y-2">
+    <Label htmlFor="signup-password">Password</Label>
+    <Input
+      id="signup-password"
+      type="password"
+      placeholder="Enter your password"
+      value={password}
+      onChange={(e) => setPassword(e.target.value)}
+      className="bg-background border-border focus:border-primary focus:ring-primary"
+      required
+    />
+  </div>
+  <GlowingButton
+    type="submit"
+    className="w-full bg-gradient-to-r from-primary to-secondary text-black"
+  >
+    <LogIn className="w-4 h-4 mr-2" />
+    Sign Up
+  </GlowingButton>
+</form>
         </CardContent>
       </Card>
     </div>
