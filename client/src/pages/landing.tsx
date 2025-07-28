@@ -24,7 +24,7 @@ export default function Landing() {
         await signInWithEmailAndPassword(auth, email, password);
       });
       toast({ title: "Login Successful", description: "Welcome back!", variant: "default" });
-      setLocation("/home");
+      setLocation("/");
     } catch (error: any) {
       toast({
         title: "Login Failed",
@@ -41,7 +41,7 @@ export default function Landing() {
         await signInWithPopup(auth, googleProvider);
       });
       toast({ title: "Google Login Successful", description: "Welcome back!", variant: "default" });
-      setLocation("/home");
+      setLocation("/");
     } catch (error: any) {
       toast({
         title: "Google Login Failed",
@@ -59,7 +59,7 @@ export default function Landing() {
         await createUserWithEmailAndPassword(auth, email, password);
       });
       toast({ title: "Sign Up Successful", description: "Account created!", variant: "default" });
-      setLocation("/home");
+      setLocation("/");
     } catch (error: any) {
       toast({
         title: "Sign Up Failed",
