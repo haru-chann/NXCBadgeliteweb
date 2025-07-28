@@ -11,14 +11,42 @@ export default function Landing() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleEmailLogin = (e: React.FormEvent) => {
+  const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Email login will be handled by Replit Auth
-    window.location.href = "/api/login";
+    try {
+      await import("firebase/auth").then(async ({ signInWithEmailAndPassword }) => {
+        const { auth } = await import("@/lib/firebase");
+        await signInWithEmailAndPassword(auth, email, password);
+      });
+      window.location.href = "/";
+    } catch (error: any) {
+      alert(error.message || "Failed to sign in");
+    }
   };
 
-  const handleGoogleLogin = () => {
-    window.location.href = "/api/login";
+  const handleGoogleLogin = async () => {
+    try {
+      await import("firebase/auth").then(async ({ signInWithPopup }) => {
+        const { auth, googleProvider } = await import("@/lib/firebase");
+        await signInWithPopup(auth, googleProvider);
+      });
+      window.location.href = "/";
+    } catch (error: any) {
+      alert(error.message || "Google sign-in failed");
+    }
+  };
+
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await import("firebase/auth").then(async ({ createUserWithEmailAndPassword }) => {
+        const { auth } = await import("@/lib/firebase");
+        await createUserWithEmailAndPassword(auth, email, password);
+      });
+      window.location.href = "/";
+    } catch (error: any) {
+      alert(error.message || "Sign up failed");
+    }
   };
 
   return (
