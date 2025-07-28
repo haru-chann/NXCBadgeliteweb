@@ -36,6 +36,29 @@ const profileSchema = z.object({
   }).optional(),
 });
 
+interface Profile {
+  id: number;
+  userId: string;
+  name: string;
+  profession?: string;
+  company?: string;
+  bio?: string;
+  phone?: string;
+  website?: string;
+  socialLinks?: {
+    linkedin?: string;
+    github?: string;
+    twitter?: string;
+    instagram?: string;
+    whatsapp?: string;
+  };
+  profileImageUrl?: string;
+  firstName?: string;
+  lastName?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 type ProfileFormData = z.infer<typeof profileSchema>;
 
 export default function ProfileEditor() {
@@ -48,7 +71,7 @@ export default function ProfileEditor() {
   const [profileUrl, setProfileUrl] = useState<string>("");
   const [qrCodeUrl, setQRCodeUrl] = useState<string>("");
 
-  const { data: profile, isLoading: profileLoading } = useQuery({
+  const { data: profile, isLoading: profileLoading } = useQuery<Profile>({
     queryKey: ["/api/profile"],
     enabled: isAuthenticated,
   });

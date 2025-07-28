@@ -13,17 +13,40 @@ export default function ProfileViews() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
 
-  const { data: profile } = useQuery({
+  interface Profile {
+    id: number;
+    userId: string;
+    name: string;
+    profession?: string;
+    company?: string;
+    bio?: string;
+    phone?: string;
+    website?: string;
+    socialLinks?: {
+      linkedin?: string;
+      github?: string;
+      twitter?: string;
+      instagram?: string;
+      whatsapp?: string;
+    };
+    profileImageUrl?: string;
+    firstName?: string;
+    lastName?: string;
+    createdAt?: string;
+    updatedAt?: string;
+  }
+
+  const { data: profile } = useQuery<Profile>({
     queryKey: ["/api/profile"],
     enabled: isAuthenticated,
   });
 
-  const { data: stats } = useQuery({
+  const { data: stats } = useQuery<any>({
     queryKey: ["/api/analytics/stats"],
     enabled: isAuthenticated,
   });
 
-  const { data: views = [] } = useQuery({
+  const { data: views = [] } = useQuery<any[]>({
     queryKey: ["/api/analytics/views", profile?.id],
     enabled: isAuthenticated && !!profile?.id,
   });

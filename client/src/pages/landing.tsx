@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { useLocation } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +12,9 @@ import GlowingButton from "@/components/glowing-button";
 export default function Landing() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showSignUp, setShowSignUp] = useState(false);
+  const { toast } = useToast();
+  const [, setLocation] = useLocation();
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,13 +23,14 @@ export default function Landing() {
         const { auth } = await import("@/lib/firebase");
         await signInWithEmailAndPassword(auth, email, password);
       });
-      window.location.href = "/";
+      toast({ title: "Login Successful", description: "Welcome back!", variant: "default" });
+      setLocation("/home");
     } catch (error: any) {
       toast({
-  title: "Login Failed",
-  description: error.message || "Failed to sign in",
-  variant: "destructive",
-});
+        title: "Login Failed",
+        description: error.message || "Failed to sign in",
+        variant: "destructive",
+      });
     }
   };
 
@@ -34,13 +40,14 @@ export default function Landing() {
         const { auth, googleProvider } = await import("@/lib/firebase");
         await signInWithPopup(auth, googleProvider);
       });
-      window.location.href = "/";
+      toast({ title: "Google Login Successful", description: "Welcome back!", variant: "default" });
+      setLocation("/home");
     } catch (error: any) {
       toast({
-  title: "Google Login Failed",
-  description: error.message || "Google sign-in failed",
-  variant: "destructive",
-});
+        title: "Google Login Failed",
+        description: error.message || "Google sign-in failed",
+        variant: "destructive",
+      });
     }
   };
 
@@ -51,13 +58,14 @@ export default function Landing() {
         const { auth } = await import("@/lib/firebase");
         await createUserWithEmailAndPassword(auth, email, password);
       });
-      window.location.href = "/";
+      toast({ title: "Sign Up Successful", description: "Account created!", variant: "default" });
+      setLocation("/home");
     } catch (error: any) {
       toast({
-  title: "Sign Up Failed",
-  description: error.message || "Sign up failed",
-  variant: "destructive",
-});
+        title: "Sign Up Failed",
+        description: error.message || "Sign up failed",
+        variant: "destructive",
+      });
     }
   };
 
@@ -98,7 +106,8 @@ export default function Landing() {
           </div>
 
           {/* Email/Password Form */}
-          <form onSubmit={handleEmailLogin} className="space-y-4">
+          {!showSignUp ? (
+            <form onSubmit={handleEmailLogin} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email address</Label>
               <Input
@@ -130,41 +139,62 @@ export default function Landing() {
               <LogIn className="w-4 h-4 mr-2" />
               Sign In
             </GlowingButton>
+            <div className="text-center mt-2">
+              <span className="text-sm text-muted-foreground">Don't have an account? </span>
+              <button
+                type="button"
+                onClick={() => setShowSignUp(true)}
+                className="text-primary underline text-sm"
+              >
+                Sign up
+              </button>
+            </div>
           </form>
-
-          <form onSubmit={handleSignUp} className="space-y-4 mt-6">
-  <div className="space-y-2">
-    <Label htmlFor="signup-email">Email address</Label>
-    <Input
-      id="signup-email"
-      type="email"
-      placeholder="Enter your email"
-      value={email}
-      onChange={(e) => setEmail(e.target.value)}
-      className="bg-background border-border focus:border-primary focus:ring-primary"
-      required
-    />
-  </div>
-  <div className="space-y-2">
-    <Label htmlFor="signup-password">Password</Label>
-    <Input
-      id="signup-password"
-      type="password"
-      placeholder="Enter your password"
-      value={password}
-      onChange={(e) => setPassword(e.target.value)}
-      className="bg-background border-border focus:border-primary focus:ring-primary"
-      required
-    />
-  </div>
-  <GlowingButton
-    type="submit"
-    className="w-full bg-gradient-to-r from-primary to-secondary text-black"
-  >
-    <LogIn className="w-4 h-4 mr-2" />
-    Sign Up
-  </GlowingButton>
-</form>
+          ) : (
+            <form onSubmit={handleSignUp} className="space-y-4 mt-6">
+              <div className="space-y-2">
+                <Label htmlFor="signup-email">Email address</Label>
+                <Input
+                  id="signup-email"
+                  type="email"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="bg-background border-border focus:border-primary focus:ring-primary"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="signup-password">Password</Label>
+                <Input
+                  id="signup-password"
+                  type="password"
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="bg-background border-border focus:border-primary focus:ring-primary"
+                  required
+                />
+              </div>
+              <GlowingButton
+                type="submit"
+                className="w-full bg-gradient-to-r from-primary to-secondary text-black"
+              >
+                <LogIn className="w-4 h-4 mr-2" />
+                Sign Up
+              </GlowingButton>
+              <div className="text-center mt-2">
+                <span className="text-sm text-muted-foreground">Already have an account? </span>
+                <button
+                  type="button"
+                  onClick={() => setShowSignUp(false)}
+                  className="text-primary underline text-sm"
+                >
+                  Sign in
+                </button>
+              </div>
+            </form>
+          )}
         </CardContent>
       </Card>
     </div>

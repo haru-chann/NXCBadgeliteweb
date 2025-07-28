@@ -1,4 +1,4 @@
-import { storage } from '../../../../server/storage';
+import { storage } from '../../../../../server/storage';
 
 export default async function handler(req: any, res: any) {
   const { id } = req.query;

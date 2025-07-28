@@ -71,13 +71,13 @@ export default function PublicProfile() {
   const fetchProfile = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/profile/${profileId}`);
+      const response: Response = await fetch(`/api/profile/${profileId}`);
       
       if (!response.ok) {
         throw new Error("Profile not found");
       }
       
-      const profileData = await response.json();
+      const profileData: Profile = await response.json();
       setProfile(profileData);
       
       // Check if this is the user's own profile

@@ -16,13 +16,37 @@ export default function ProfileView() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: profile, isLoading } = useQuery({
+  interface Profile {
+    id: number;
+    userId: string;
+    name: string;
+    profession?: string;
+    company?: string;
+    bio?: string;
+    phone?: string;
+    website?: string;
+    socialLinks?: {
+      linkedin?: string;
+      github?: string;
+      twitter?: string;
+      instagram?: string;
+      whatsapp?: string;
+    };
+    profileImageUrl?: string;
+    firstName?: string;
+    lastName?: string;
+    createdAt?: string;
+    updatedAt?: string;
+  }
+
+  const { data: profile, isLoading } = useQuery<Profile>({
     queryKey: ["/api/profile", id],
     enabled: !!id,
   });
 
   const saveConnectionMutation = useMutation({
     mutationFn: async () => {
+      if (!profile) throw new Error("Profile not loaded");
       await apiRequest("POST", "/api/connections", {
         toUserId: profile.userId,
         toProfileId: profile.id,

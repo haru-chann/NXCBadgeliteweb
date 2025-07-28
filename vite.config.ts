@@ -1,9 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
-// @ts-expect-error: No type definitions for Replit Vite plugins
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
-// @ts-expect-error: No type definitions for Replit Vite plugins
 import { cartographer } from "@replit/vite-plugin-cartographer";
 
 const isReplitDev = process.env.NODE_ENV !== "production" && process.env.REPL_ID !== undefined;
